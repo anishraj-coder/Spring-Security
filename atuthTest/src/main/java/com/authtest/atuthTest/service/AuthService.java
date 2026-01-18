@@ -1,7 +1,9 @@
 package com.authtest.atuthTest.service;
 
 import com.authtest.atuthTest.dto.UserDto;
+import com.authtest.atuthTest.dto.request.RegisterRequest;
+import com.authtest.atuthTest.dto.response.RegisterResponse;
 
 public interface AuthService {
-    public UserDto registerUser(UserDto userDto);
+    public RegisterResponse registerUser(RegisterRequest userDto);
 }

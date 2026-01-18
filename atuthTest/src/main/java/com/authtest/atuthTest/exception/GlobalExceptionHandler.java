@@ -1,6 +1,10 @@
 package com.authtest.atuthTest.exception;
 
 import com.authtest.atuthTest.dto.ApiError;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,5 +97,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneralException(Exception ex) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", List.of(ex.getMessage()));
+    }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiError> handleExpiredJwt(ExpiredJwtException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Token has expired. Please login again.", List.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<ApiError> handleMalformedJwt(MalformedJwtException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid JWT token structure.", List.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiError> handleSignatureException(SignatureException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "JWT signature validation failed. The token has been tampered with.", List.of(ex.getMessage()));
+    }
+
+    // This catches all other JWT related exceptions (unsupported, illegal argument, etc.)
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiError> handleJwtException(JwtException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Authentication failed: " + ex.getMessage(), null);
     }
 }

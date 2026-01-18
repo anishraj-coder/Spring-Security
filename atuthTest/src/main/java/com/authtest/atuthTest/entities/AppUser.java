@@ -7,27 +7,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
-@Table(name="users")
+@Table(name="users",indexes = {
+        @Index(name = "user_email",columnList = "email")
+})
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUser {
+@NullMarked
+public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(unique = true )
     private String email;
-    private String pass;
+    private String password;
     private String name;
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -58,5 +64,38 @@ public class AppUser {
     @PreUpdate
     protected void updationTimeStamp(){
         this.setUpdatedAt(Instant.now());
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.getRoles()==null||this.getRoles().isEmpty()?
+                List.of(new SimpleGrantedAuthority("ROLE_USER")):this.getRoles().stream()
+                .map(role->new SimpleGrantedAuthority("ROLE_"+role.getName())).toList();
+    }
+
+
+    @Override
+    public String getUsername() {
+        return this.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.getIsEnabled();
     }
 }

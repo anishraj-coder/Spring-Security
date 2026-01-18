@@ -3,6 +3,7 @@ package com.authtest.atuthTest.dto;
 import com.authtest.atuthTest.entities.types.Gender;
 import com.authtest.atuthTest.entities.types.Provider;
 import lombok.*;
+import org.jspecify.annotations.NullMarked;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -14,10 +15,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+@NullMarked
+public  class UserDto {
     private UUID id;
     private String email;
-    private String pass;
+    private String password;
     private String name;
     private Gender gender;
     private String image;

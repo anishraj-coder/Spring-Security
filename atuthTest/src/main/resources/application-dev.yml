@@ -1,24 +1,43 @@
 spring:
   application:
-    name: Auth Test Dev
+    name: "Auth Test Dev"
+
   datasource:
     url: jdbc:postgresql://localhost:5432/authdb
     username: postgres
-    password: anish@123
+    password: "anish@123"
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: 'create-drop'
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
+
   security:
     user:
       name: root
       password: root
+
 server:
   port: 8082
   servlet:
     context-path: /api
+
+logging:
+  level:
+    org.springframework.security: debug
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:OYG19RMnZBIKFGAWkInZ0sxUeNQwqAwf1jbUG4mJ6zCDRamP6pt2kyvk5fDJ9VnE}
+    issuer: ${JWT_ISSUER:anish.raj}
+    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:3600}
+    refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:86400}
+    refresh-token-cookie-name: ${JWT_REFRESH_TOKEN_COOKIE_NAME:refreshCookie}
+    cookie-secure: ${JWT_COOKIE_SECURE:true}
+    cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
+    cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
