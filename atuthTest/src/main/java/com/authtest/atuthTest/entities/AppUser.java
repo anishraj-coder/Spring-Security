@@ -43,8 +43,11 @@ public class AppUser implements UserDetails {
     private Provider provider=Provider.LOCAL;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="user_roles"),name="user_roles")
+    @JoinTable(
+            name="user_roles_map",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id")
+    )
     private Set<Role> roles=new HashSet<>();
 
     @CreationTimestamp
@@ -76,8 +79,9 @@ public class AppUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.getEmail();
+        return this.email;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -96,6 +100,6 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.getIsEnabled();
+        return this.isEnabled;
     }
 }

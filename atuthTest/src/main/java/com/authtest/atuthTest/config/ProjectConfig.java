@@ -1,5 +1,7 @@
 package com.authtest.atuthTest.config;
 
+import com.authtest.atuthTest.dto.UserDto;
+import com.authtest.atuthTest.entities.AppUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,9 @@ public class ProjectConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
                 .setSkipNullEnabled(true);
+        modelMapper.typeMap(UserDto.class, AppUser.class)
+                .addMappings(mapper -> mapper
+                        .skip(AppUser::setRoles));
         return modelMapper;
     }
     @Bean

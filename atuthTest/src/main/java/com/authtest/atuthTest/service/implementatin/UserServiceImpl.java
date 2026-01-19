@@ -3,8 +3,10 @@ package com.authtest.atuthTest.service.implementatin;
 import com.authtest.atuthTest.dto.UserDto;
 import com.authtest.atuthTest.entities.AppUser;
 import com.authtest.atuthTest.entities.types.Provider;
+import com.authtest.atuthTest.entities.types.Role;
 import com.authtest.atuthTest.exception.ResourceNotFound;
 import com.authtest.atuthTest.repository.AppUserRepository;
+import com.authtest.atuthTest.repository.RoleRepository;
 import com.authtest.atuthTest.service.UserService;
 import com.authtest.atuthTest.utils.UserHelper;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final AppUserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional
@@ -33,9 +36,25 @@ public class UserServiceImpl implements UserService {
         }
         AppUser user=modelMapper.map(userDto,AppUser.class);
         if(user.getProvider()==null)user.setProvider(Provider.LOCAL);
+        if(userDto.getRoles()==null||userDto.getRoles().isEmpty()){
+            // Better approach in UserServiceImpl:
+            Role role = roleRepository.findByName("USER")
+                    .orElseGet(() -> roleRepository.save(Role.builder().name("USER").build()));
+            user.setRoles(Set.of(role));
+        }else{
+            Set<Role> rolesToAssign=new HashSet<>();
+            for(String role:userDto.getRoles()){
+                Role existingRole=roleRepository.findByName(role.toUpperCase())
+                        .orElseGet(()->roleRepository
+                                .save(Role.builder().name(role.toUpperCase()).build()));
+                rolesToAssign.add(existingRole);
+            }
+            user.setRoles(rolesToAssign);
+        }
         AppUser savedUser=userRepository.save(user);
-
-        return modelMapper.map(savedUser,UserDto.class);
+        UserDto response=modelMapper.map(savedUser,UserDto.class);
+        response.setRoles(savedUser.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
+        return response;
     }
 
     @Override

@@ -10,6 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,18 +27,34 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 import java.util.List;
 
+@Primary
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver exceptionResolver;
     private final UserDetailsService userDetailsService;
     private final JwtService jwtService;
 
+    // JwtAuthenticationFilter.java
+    public JwtAuthenticationFilter(
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
+            UserDetailsService userDetailsService,
+            JwtService jwtService) {
+        this.exceptionResolver = exceptionResolver;
+        this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
+    }
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        log.info("Incoming request from URI: {}",request.getRequestURI());
+        if (request.getServletPath().startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String header=request.getHeader("Authorization");
         if(header==null||!header.startsWith("Bearer")){
             filterChain.doFilter(request,response);
@@ -72,4 +91,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request,response);
     }
+
+
 }

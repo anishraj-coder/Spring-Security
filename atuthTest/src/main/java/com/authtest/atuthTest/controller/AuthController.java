@@ -1,7 +1,9 @@
 package com.authtest.atuthTest.controller;
 
 import com.authtest.atuthTest.dto.UserDto;
+import com.authtest.atuthTest.dto.request.LoginRequestDto;
 import com.authtest.atuthTest.dto.request.RegisterRequest;
+import com.authtest.atuthTest.dto.response.LoginResponseDto;
 import com.authtest.atuthTest.dto.response.RegisterResponse;
 import com.authtest.atuthTest.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +25,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerUser(@Validated @RequestBody RegisterRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerUser(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> loginUser(@Validated @RequestBody LoginRequestDto request){
+        return ResponseEntity.ok(authService.loginUser(request.getEmail(),request.getPassword()));
     }
 }

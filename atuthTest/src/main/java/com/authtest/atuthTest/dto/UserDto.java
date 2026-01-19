@@ -24,7 +24,7 @@ public  class UserDto {
     private Gender gender;
     private String image;
     private Provider provider=Provider.LOCAL;
-    private Set<RoleDto> roles=new HashSet<>();
+    private Set<String> roles=new HashSet<>();
     private Instant createdAt=Instant.now();
     private Instant updatedAt=Instant.now();
     private Boolean isEnabled=true;
