@@ -1,5 +1,6 @@
 package com.authtest.atuthTest.service.implementatin;
 
+import com.authtest.atuthTest.dto.RoleDto;
 import com.authtest.atuthTest.dto.UserDto;
 import com.authtest.atuthTest.entities.AppUser;
 import com.authtest.atuthTest.entities.types.Provider;
@@ -37,23 +38,24 @@ public class UserServiceImpl implements UserService {
         AppUser user=modelMapper.map(userDto,AppUser.class);
         if(user.getProvider()==null)user.setProvider(Provider.LOCAL);
         if(userDto.getRoles()==null||userDto.getRoles().isEmpty()){
-            // Better approach in UserServiceImpl:
             Role role = roleRepository.findByName("USER")
                     .orElseGet(() -> roleRepository.save(Role.builder().name("USER").build()));
             user.setRoles(Set.of(role));
         }else{
             Set<Role> rolesToAssign=new HashSet<>();
-            for(String role:userDto.getRoles()){
-                Role existingRole=roleRepository.findByName(role.toUpperCase())
+            for(RoleDto role:userDto.getRoles()){
+                Role existingRole=roleRepository.findByName(role.getName().toUpperCase())
                         .orElseGet(()->roleRepository
-                                .save(Role.builder().name(role.toUpperCase()).build()));
+                                .save(Role.builder().name(role.getName().toUpperCase()).build()));
                 rolesToAssign.add(existingRole);
             }
             user.setRoles(rolesToAssign);
         }
         AppUser savedUser=userRepository.save(user);
         UserDto response=modelMapper.map(savedUser,UserDto.class);
-        response.setRoles(savedUser.getRoles().stream().map(Role::getName).collect(Collectors.toSet()));
+        response.setRoles(savedUser.getRoles().stream()
+                .map((element) -> modelMapper.map(element, RoleDto.class))
+                .collect(Collectors.toSet()));
         return response;
     }
 

@@ -35,9 +35,10 @@ security:
   jwt:
     secret: ${JWT_SECRET:OYG19RMnZBIKFGAWkInZ0sxUeNQwqAwf1jbUG4mJ6zCDRamP6pt2kyvk5fDJ9VnE}
     issuer: ${JWT_ISSUER:anish.raj}
-    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:3600}
+    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:300}
     refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:86400}
     refresh-token-cookie-name: ${JWT_REFRESH_TOKEN_COOKIE_NAME:refreshCookie}
     cookie-secure: ${JWT_COOKIE_SECURE:true}
     cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
     cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
+    cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}

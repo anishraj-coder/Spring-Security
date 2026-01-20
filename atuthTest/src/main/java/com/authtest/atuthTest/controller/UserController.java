@@ -1,12 +1,19 @@
 package com.authtest.atuthTest.controller;
 
 import com.authtest.atuthTest.dto.UserDto;
+import com.authtest.atuthTest.dto.response.UserResponseDto;
 import com.authtest.atuthTest.service.UserService;
+import com.authtest.atuthTest.utils.UserHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/user")
@@ -20,9 +27,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
     }
     @GetMapping
-    public ResponseEntity<Iterable<UserDto>> getAllUsers(){
+    public ResponseEntity<Iterable<UserResponseDto>> getAllUsers(){
         log.info("incoming post get all to controller ");
-        return ResponseEntity.ok(userService.getAllUsers());
+        Iterable<UserDto> users= userService.getAllUsers();
+        Set<UserResponseDto> response= StreamSupport.stream(users.spliterator(),false)
+                .map(UserHelper::convertUserDtoToResponse)
+                .collect(Collectors.toSet());
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/single")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam(name = "email")String email){
@@ -34,7 +45,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
     @PatchMapping
-    public ResponseEntity<UserDto> updateUser(@RequestParam(name="user_id")String  userId,UserDto userDto){
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUser(userDto,userId));
+    public ResponseEntity<UserResponseDto> updateUser(@RequestParam(name="user_id")String  userId, UserDto userDto){
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(UserHelper.convertUserDtoToResponse(userService.updateUser(userDto,userId)));
     }
 }

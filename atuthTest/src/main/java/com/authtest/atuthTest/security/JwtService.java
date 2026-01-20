@@ -1,7 +1,8 @@
 package com.authtest.atuthTest.security;
 
+import com.authtest.atuthTest.dto.AccessTokenDto;
 import com.authtest.atuthTest.entities.AppUser;
-import com.authtest.atuthTest.entities.types.Role;
+import com.authtest.atuthTest.dto.RefreshTokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -46,33 +47,38 @@ public class JwtService {
         this.issuer = issuer;
     }
 
-    public String generateAccessToken(AppUser user){
+    public AccessTokenDto generateAccessToken(AppUser user){
         List<String> roles=user.getRoles()==null?List.of():
                 user.getRoles().stream().map(role->"ROLE_"+role.getName()).toList();
-        Instant now= Instant.now();
-        return Jwts.builder()
+        Instant issuedAt= Instant.now();
+        Instant expiresAt=issuedAt.plusSeconds(this.accessTtl);
+
+        String token=Jwts.builder()
                 .id(UUID.randomUUID().toString())
                 .subject(user.getEmail())
                 .issuer(this.issuer)
                 .signWith(key)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(this.accessTtl)))
+                .issuedAt(Date.from(issuedAt))
+                .expiration(Date.from(expiresAt))
                 .claims(Map.of("typ","access","id",user.getId().toString(),"roles",roles))
                 .compact();
+        return AccessTokenDto.of(token,issuedAt,expiresAt,user);
     }
-    public String generateRefreshToken(AppUser user,String jti){
+    public RefreshTokenDto generateRefreshToken(AppUser user, String jti){
         List<String> roles=user.getRoles()==null?List.of("ROLE_USER"):
                 user.getRoles().stream().map(role->"ROLE_"+role.getName()).toList();
         Instant now=Instant.now();
-        return Jwts.builder()
+        Instant expire=Instant.now().plusSeconds(this.refreshTtl);
+        String token= Jwts.builder()
                 .id(jti)
                 .subject(user.getEmail())
                 .issuer(this.issuer)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(this.refreshTtl)))
+                .expiration(Date.from(expire))
                 .claims(Map.of("typ","refresh","roles",roles,"id",user.getId().toString()))
                 .signWith(key)
                 .compact();
+        return RefreshTokenDto.of(token,now,expire,user);
     }
 
     public Jws<Claims> parseClaims(String token){
