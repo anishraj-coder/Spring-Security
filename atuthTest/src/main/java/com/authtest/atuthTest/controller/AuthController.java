@@ -43,4 +43,9 @@ public class AuthController {
         authService.logout(request,response);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/login")
+    public ResponseEntity<String> loginError(@RequestParam(required = false) String error) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Login Failed: " + error);
+    }
 }

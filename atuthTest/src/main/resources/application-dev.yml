@@ -18,9 +18,20 @@ spring:
         format_sql: false
 
   security:
-    user:
-      name: root
-      password: root
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+              - openid
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+
 
 server:
   port: 8082
@@ -29,8 +40,10 @@ server:
 
 logging:
   level:
-    org.springframework.security: info
-
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.apache.hc.client5.http.wire: DEBUG
 security:
   jwt:
     secret: ${JWT_SECRET:OYG19RMnZBIKFGAWkInZ0sxUeNQwqAwf1jbUG4mJ6zCDRamP6pt2kyvk5fDJ9VnE}
@@ -42,3 +55,7 @@ security:
     cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
     cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
     cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
