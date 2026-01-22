@@ -15,4 +15,7 @@ public interface AuthService {
     public LoginResponseDto loginUser(String email, String password, HttpServletResponse response);
     public LoginResponseDto refreshUser(HttpServletRequest request, HttpServletResponse response);
     public void logout(HttpServletRequest request,HttpServletResponse response);
+    public String generatePasswordResetToken(String email);
+    public void verifyAndResetPassword(String token,String newPassword);
+    public void verifyUser(String token);
 }

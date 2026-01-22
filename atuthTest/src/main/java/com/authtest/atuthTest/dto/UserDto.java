@@ -27,5 +27,5 @@ public  class UserDto {
     private Set<RoleDto> roles=new HashSet<>();
     private Instant createdAt=Instant.now();
     private Instant updatedAt=Instant.now();
-    private Boolean isEnabled=true;
+    private Boolean enabled =true;
 }

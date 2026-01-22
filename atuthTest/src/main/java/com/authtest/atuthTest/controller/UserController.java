@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -24,7 +23,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
         log.info("incoming post request to controller {}",userDto.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUserDto(userDto));
     }
     @GetMapping
     public ResponseEntity<Iterable<UserResponseDto>> getAllUsers(){

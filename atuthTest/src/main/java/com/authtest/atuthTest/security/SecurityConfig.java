@@ -2,10 +2,12 @@ package com.authtest.atuthTest.security;
 
 import com.authtest.atuthTest.security.oauth2.OAuth2FailureHandler;
 import com.authtest.atuthTest.security.oauth2.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,13 +45,23 @@ public class SecurityConfig {
                 .sessionManagement(session->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
-                        auth.requestMatchers("/auth/**","/swagger-ui.html","/swagger-ui/**").permitAll()
+                        auth.requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/user/**").authenticated()
                                 .anyRequest().authenticated()
-                ).oauth2Login(oauth2->oauth2
+                ).exceptionHandling(ex->
+                        ex.authenticationEntryPoint((request,
+                                                     response,
+                                                     authError)->{
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{ \"error\": \"Unauthorized\", \"message\": \"" +
+                            authError.getMessage() + "\" }");
+                }))
+                .oauth2Login(oauth2->oauth2
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler)
-                ).logout(AbstractHttpConfigurer::disable).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                ).logout(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

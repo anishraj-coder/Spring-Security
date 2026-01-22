@@ -28,7 +28,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUserDto(UserDto userDto) {
+
+        AppUser savedUser=createUser(userDto);
+        UserDto response=modelMapper.map(savedUser,UserDto.class);
+        response.setRoles(savedUser.getRoles().stream()
+                .map((element) -> modelMapper.map(element, RoleDto.class))
+                .collect(Collectors.toSet()));
+        return response;
+    }
+
+    @Override
+    public AppUser createUser(UserDto userDto) {
         if(userDto.getEmail()==null||userDto.getEmail().isBlank()){
             throw new IllegalArgumentException("Email is required");
         }
@@ -51,13 +62,9 @@ public class UserServiceImpl implements UserService {
             }
             user.setRoles(rolesToAssign);
         }
-        AppUser savedUser=userRepository.save(user);
-        UserDto response=modelMapper.map(savedUser,UserDto.class);
-        response.setRoles(savedUser.getRoles().stream()
-                .map((element) -> modelMapper.map(element, RoleDto.class))
-                .collect(Collectors.toSet()));
-        return response;
+        return userRepository.save(user);
     }
+
 
     @Override
     @Transactional(readOnly = true)

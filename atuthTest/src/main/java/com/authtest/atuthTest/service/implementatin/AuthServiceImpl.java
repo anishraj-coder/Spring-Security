@@ -6,13 +6,19 @@ import com.authtest.atuthTest.dto.request.RegisterRequest;
 import com.authtest.atuthTest.dto.response.LoginResponseDto;
 import com.authtest.atuthTest.dto.response.RegisterResponse;
 import com.authtest.atuthTest.entities.AppUser;
+import com.authtest.atuthTest.entities.PasswordResetToken;
 import com.authtest.atuthTest.entities.RefreshToken;
 import com.authtest.atuthTest.dto.RefreshTokenDto;
+import com.authtest.atuthTest.entities.VerificationToken;
+import com.authtest.atuthTest.exception.ResourceNotFound;
 import com.authtest.atuthTest.repository.AppUserRepository;
+import com.authtest.atuthTest.repository.PasswordResetTokenRepository;
 import com.authtest.atuthTest.repository.RefreshTokenRepository;
+import com.authtest.atuthTest.repository.VerificationTokenRepository;
 import com.authtest.atuthTest.security.CookieService;
 import com.authtest.atuthTest.security.JwtService;
 import com.authtest.atuthTest.service.AuthService;
+import com.authtest.atuthTest.service.EmailService;
 import com.authtest.atuthTest.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +33,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -44,6 +53,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final CookieService cookieService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
+    private final VerificationTokenRepository verificationTokenRepository;
+
     @Transactional
     @Override
     public RegisterResponse registerUser(RegisterRequest request) {
@@ -54,8 +67,21 @@ public class AuthServiceImpl implements AuthService {
                 .gender(request.getGender())
                 .password(Objects.requireNonNull(passwordEncoder.encode(request.getPassword())))
                 .build();
-        UserDto createdUser=userService.createUser(userDto);
-
+        AppUser createdUser=userService.createUser(userDto);
+        String token=UUID.randomUUID().toString();
+        VerificationToken newToken=VerificationToken.builder()
+                .token(token)
+                .expiresAt(Instant.now().plus(Duration.ofHours(24)))
+                .user(createdUser)
+                .build();
+        VerificationToken savedToken=verificationTokenRepository.save(newToken);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                emailService.sendMail(createdUser.getEmail(),"Please verify your email",
+                        "http://localhost:8082/api/auth/verify?token="+token);
+            }
+        });
         return modelMapper.map(createdUser,RegisterResponse.class);
     }
 
@@ -93,6 +119,26 @@ public class AuthServiceImpl implements AuthService {
 
         return LoginResponseDto.of(email,accessToken,null,
                 jwtService.getAccessTtl(),"Bearer");
+    }
+
+    @Override
+    @Transactional
+    public void verifyUser(String token) {
+        VerificationToken verificationToken=verificationTokenRepository.findByToken(token)
+                .orElseThrow(()->{
+                    log.error("The provided token does not exist anymore or is invalid, token: {}",token);
+                    throw new ResourceNotFound("The provided token does not exist anymore or is invalid");
+                });
+        if(verificationToken.isExpired()){
+            verificationTokenRepository.delete(verificationToken);
+            log.error("The provided token is now expired, token: {}",token);
+            throw new BadCredentialsException("Provided token is now expired ");
+        }
+        AppUser user=verificationToken.getUser();
+        user.setEnabled(true);
+        userRepository.save(user);
+        log.info("The user has been enabled");
+        verificationTokenRepository.delete(verificationToken);
     }
 
     @Transactional
@@ -170,5 +216,64 @@ public class AuthServiceImpl implements AuthService {
         cookieService.addNoStoreHeaders(response);
         cookieService.clearRefreshToken(response);
         SecurityContextHolder.clearContext();
+    }
+
+    @Override
+    @Transactional
+    public String generatePasswordResetToken(String email) {
+        if(email==null||email.isBlank()){
+            log.error("The provided email is invalid: {}",email);
+            throw new IllegalArgumentException("The email is invalid email: "+email);
+        }
+        AppUser user=userRepository.findByEmail(email)
+                .orElseThrow(()->{
+                    log.error("The given email does not exist in DB: {}",email);
+                    return new ResourceNotFound("The given email does not exist");
+                });
+        if(!user.isEnabled()){
+            throw new BadCredentialsException("The user is still now verified");
+        }
+        passwordResetTokenRepository.findByUser(user)
+                .ifPresent(passwordResetTokenRepository::delete);
+        String token=UUID.randomUUID().toString();
+        PasswordResetToken resetToken=PasswordResetToken.builder()
+                .token(token)
+                .expiresAt(Instant.now().plus(Duration.ofMinutes(15)))
+                .user(user)
+                .build();
+        passwordResetTokenRepository.save(resetToken);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                emailService.sendMail(user.getEmail(),"Reset Email",
+                        "http://localhost:3000/reset-password?token="+token);
+            }
+        });
+        return "The email has been sent";
+    }
+
+    @Override
+    @Transactional
+    public void verifyAndResetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken=passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(()->{
+                    log.error("The provided reset password token is invalid: {}",token);
+                    throw new BadCredentialsException("The provided reset password token is invalid: "+token);
+                });
+        if(resetToken.isExpired()){
+            log.error("The provided token is expired: {}",token);
+            throw new BadCredentialsException("The provided token is expired: "+token);
+        }
+        refreshTokenRepository.findByUser(resetToken.getUser()).forEach(rt -> {
+            rt.setRevoked(true);
+            refreshTokenRepository.save(rt);
+        });
+        AppUser user=resetToken.getUser();
+        if(!user.isEnabled()){
+            throw new BadCredentialsException("The user is still not verified");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        passwordResetTokenRepository.delete(resetToken);
     }
 }

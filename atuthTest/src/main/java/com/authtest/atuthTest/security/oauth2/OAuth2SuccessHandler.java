@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -45,12 +44,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication)
+            throws IOException, ServletException {
         log.info("Success Handler entered for the OAuth2");
         OAuth2AuthenticationToken authToken=(OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User=authToken.getPrincipal();
         String registrationId=authToken.getAuthorizedClientRegistrationId();
-        OAuth2UserInfo userInfo=OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId,oAuth2User.getAttributes());
+        OAuth2UserInfo userInfo=OAuth2UserInfoFactory
+                .getOAuth2UserInfo(registrationId,oAuth2User.getAttributes());
         if(userInfo.getEmail()==null||userInfo.getEmail().isBlank()){
             throw new BadCredentialsException("The given email is invalid");
         }
@@ -65,7 +66,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     }
 
-    private void issueRefreshToken(AppUser user, String jti, HttpServletResponse response) {
+    private void issueRefreshToken(AppUser user, String jti,
+                                   HttpServletResponse response) {
         RefreshTokenDto refreshTokenRecord=jwtService.generateRefreshToken(user,jti);
         RefreshToken rt=RefreshToken.builder()
                 .replaceBy(null)
@@ -76,12 +78,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .revoked(false)
                 .build();
         RefreshToken savedRt=refreshTokenRepository.save(rt);
-        cookieService.attachRefreshCookie(response,refreshTokenRecord.token(), jwtService.getRefreshTtl());
+        cookieService.attachRefreshCookie(response,refreshTokenRecord.token()
+                , jwtService.getRefreshTtl());
         cookieService.addNoStoreHeaders(response);
     }
 
     private AppUser registerUser(OAuth2UserInfo userInfo) {
-        String name= userInfo.getName();
+        String name= (userInfo.getName()==null||userInfo.getName().isBlank())
+                ?userInfo.getEmail():userInfo.getName();
         if(userInfo.getName()==null||userInfo.getName().isBlank())name= userInfo.getName();
 
         Role roles=roleRepository.findByName("USER")
@@ -95,7 +99,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .roles(Set.of(roles))
-                .isEnabled(true)
+                .enabled(true)
                 .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .provider(userInfo.getProvider())
                 .build();
@@ -110,7 +114,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private String determineRedirectUrl(String accessToken){
-        return "http://localhost:8082/oauth2/redirect?token=" + accessToken;
+        return "http://localhost:3000/oauth2/redirect?token=" + accessToken;
     }
 
 }

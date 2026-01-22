@@ -8,7 +8,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,7 +56,7 @@ public class AppUser implements UserDetails {
     @UpdateTimestamp
     private Instant updatedAt=Instant.now();
     @Builder.Default
-    private Boolean isEnabled=true;
+    private Boolean enabled =false;
 
     @PrePersist
     protected  void creationTimeStamp(){
@@ -100,6 +99,6 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled;
+        return this.enabled;
     }
 }

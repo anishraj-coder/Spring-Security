@@ -1,8 +1,9 @@
 package com.authtest.atuthTest.controller;
 
-import com.authtest.atuthTest.dto.UserDto;
-import com.authtest.atuthTest.dto.request.LoginRequestDto;
+import com.authtest.atuthTest.dto.request.ForgetPasswordRequest;
+import com.authtest.atuthTest.dto.request.LoginRequest;
 import com.authtest.atuthTest.dto.request.RegisterRequest;
+import com.authtest.atuthTest.dto.request.ResetPasswordRequest;
 import com.authtest.atuthTest.dto.response.LoginResponseDto;
 import com.authtest.atuthTest.dto.response.RegisterResponse;
 import com.authtest.atuthTest.service.AuthService;
@@ -27,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> loginUser(@Validated @RequestBody LoginRequestDto request,
+    public ResponseEntity<LoginResponseDto> loginUser(@Validated @RequestBody LoginRequest request,
                                                       HttpServletResponse response){
         return ResponseEntity.ok(authService.loginUser(request.getEmail(),request.getPassword(),response));
     }
@@ -47,5 +48,22 @@ public class AuthController {
     public ResponseEntity<String> loginError(@RequestParam(required = false) String error) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Login Failed: " + error);
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity<String> forgetPassword(@Validated @RequestBody ForgetPasswordRequest request){
+        return ResponseEntity.ok(authService.generatePasswordResetToken(request.getEmail()));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Validated @RequestBody ResetPasswordRequest request){
+        authService.verifyAndResetPassword(request.getToken(),request.getPassword());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam String token){
+        authService.verifyUser(token);
+        return ResponseEntity.ok("The user is now verified");
     }
 }
