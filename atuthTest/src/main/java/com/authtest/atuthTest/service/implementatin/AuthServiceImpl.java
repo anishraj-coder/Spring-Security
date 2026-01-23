@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerUser(RegisterRequest request) {
         UserDto userDto=UserDto.builder()
                 .email(request.getEmail())
-                .name(request.getEmail())
+                .name(request.getName())
                 .image(request.getImage())
                 .gender(request.getGender())
                 .password(Objects.requireNonNull(passwordEncoder.encode(request.getPassword())))

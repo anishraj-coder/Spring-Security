@@ -35,8 +35,9 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/single")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestParam(name = "email")String email){
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+    public ResponseEntity<UserResponseDto> getUserByEmail(@RequestParam(name = "email")String email){
+        var response=UserHelper.convertUserDtoToResponse(userService.getUserByEmail(email));
+        return ResponseEntity.ok(response);
     }
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(@RequestParam(name = "user_id")String userId){

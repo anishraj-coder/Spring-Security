@@ -13,6 +13,7 @@ target/
 .springBeans
 .sts4-cache
 .env
+runner.sh
 
 ### IntelliJ IDEA ###
 .idea
