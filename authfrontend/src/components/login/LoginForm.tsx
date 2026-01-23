@@ -102,8 +102,15 @@ export function LoginForm({
                                 <Button disabled={isPending} type="submit">
                                     {isPending?<Spinner/>:"Login"}
                                 </Button>
-                                <Button variant="outline" type="button">
+                                <span className="my-0.5 mx-auto block h-px w-full bg-border opacity-50" />
+                                <Button variant="outline" onClick={()=>
+                                    window.location.href="http://localhost:8082/api/oauth2/authorization/google"}
+                                        type="button">
                                     Login with Google
+                                </Button>
+                                <Button variant="outline" onClick={()=>window.location
+                                    .href="http://localhost:8082/api/oauth2/authorization/github"} type="button">
+                                    Login with Github
                                 </Button>
                                 <FieldDescription className="text-center">
                                     Don&apos;t have an account?

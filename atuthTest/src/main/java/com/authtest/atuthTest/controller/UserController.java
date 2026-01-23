@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -39,6 +40,14 @@ public class UserController {
         var response=UserHelper.convertUserDtoToResponse(userService.getUserByEmail(email));
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/info")
+    public ResponseEntity<UserResponseDto> getUserInfo(Authentication authentication){
+        String email=(String) authentication.getPrincipal();
+        var response=UserHelper.convertUserDtoToResponse(userService.getUserByEmail(email));
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping
     public ResponseEntity<Void> deleteUser(@RequestParam(name = "user_id")String userId){
         userService.deleteUser(userId);

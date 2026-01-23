@@ -21,6 +21,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useSignup} from "@/api/useSignup.ts";
 import type {ApiError, RegisterRequest} from "@/utils/constants.ts";
 import {toast} from "sonner";
+import {Spinner} from "@/components/ui/spinner.tsx";
 
 const signUpSchema=z.object({
     email: z.email({message: "Please enter a valid email"}),
@@ -129,11 +130,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                         </Field>
                         <FieldGroup>
                             <Field>
-                                <Button disabled={isPending} type="submit">
-                                    {isPending?"Signing up":"Create Account"}
+                                <Button disabled={isPending}  type="submit">
+                                    {isPending?<Spinner/>:"Create Account"}
                                 </Button>
-                                <Button variant="outline" type="button">
-                                    Sign up with Google
+                                <span className="my-0.5 mx-auto block h-px w-full bg-border opacity-50" />
+                                <Button variant="outline" onClick={()=>
+                                    window.location.href="http://localhost:8082/api/oauth2/authorization/google"}
+                                        type="button">
+                                    Login with Google
+                                </Button>
+                                <Button variant="outline" onClick={()=>window.location
+                                    .href="http://localhost:8082/api/oauth2/authorization/github"} type="button">
+                                    Login with Github
                                 </Button>
                                 <FieldDescription className="px-6 text-center">
                                     Already have an account?
