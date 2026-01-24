@@ -26,7 +26,10 @@ const Header = () => {
                 <NavigationMenu>
                     <NavigationMenuList className={`gap-5`}>
                         <NavigationMenuItem>
-                            <h1 className={`text-xl font-bold`}>Text</h1>
+                            <div className={`flex items-center h-full gap-5`}>
+                                <img src={`/icon.svg`} className={`object-contain object-center h-full`} alt="icon"/>
+                                <h1 className={`text-2xl font-bold`}>Auth App</h1>
+                            </div>
                         </NavigationMenuItem>
                         {isLoggedIn&&<NavigationMenuItem>
                             <NavLink className={({isActive})=>

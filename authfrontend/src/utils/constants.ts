@@ -74,3 +74,4 @@ export interface PaginatedResponse<T> {
     totalElements: number
     totalPages: number
 }
+export const baseUrl = import.meta.env.VITE_API_URL;

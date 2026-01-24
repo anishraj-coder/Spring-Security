@@ -1,10 +1,10 @@
 import axios from "axios";
 import {useAuthStore} from "@/store/useAuthStore.ts";
-import type { LoginResponse} from "@/utils/constants.ts";
+import {baseUrl, type LoginResponse} from "@/utils/constants.ts";
 
 
 export const api=axios.create({
-    baseURL: "http://localhost:8082/api",
+    baseURL: baseUrl,
     withCredentials:true,
 });
 
