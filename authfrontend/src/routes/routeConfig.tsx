@@ -10,6 +10,7 @@ import AdminGuard from "@/components/auth/AdminGuard.tsx";
 import AdminDashboard from "@/components/admin/AdminDashboard.tsx";
 import ForgetPasswordForm from "@/components/forgetPassword/ForgetPasswordForm.tsx";
 import ResetPassword from "@/components/forgetPassword/ResetPassword.tsx";
+import NotFound from "@/components/error/NotFound.tsx";
 
 export const routeConfig = createBrowserRouter([{
     path: '/',
@@ -36,6 +37,7 @@ export const routeConfig = createBrowserRouter([{
                     <AdminDashboard />
                 </AdminGuard>
             )
-        }
+        },
+        {path:'*',element:<NotFound/>}
     ]
 }]);
