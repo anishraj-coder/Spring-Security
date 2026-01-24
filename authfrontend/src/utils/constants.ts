@@ -74,4 +74,10 @@ export interface PaginatedResponse<T> {
     totalElements: number
     totalPages: number
 }
+
+export interface ResetRequest{
+    email: string;
+    password:string;
+}
+
 export const baseUrl = import.meta.env.VITE_API_URL;

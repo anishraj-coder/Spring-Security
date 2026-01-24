@@ -26,10 +26,12 @@ const Header = () => {
                 <NavigationMenu>
                     <NavigationMenuList className={`gap-5`}>
                         <NavigationMenuItem>
-                            <div className={`flex items-center h-full gap-5`}>
-                                <img src={`/icon.svg`} className={`object-contain object-center h-full`} alt="icon"/>
-                                <h1 className={`text-2xl font-bold`}>Auth App</h1>
-                            </div>
+                            <NavLink to={'/'}>
+                                <div className={`flex items-center h-full gap-5 cursor-pointer select-none`}>
+                                    <img src={`/icon.svg`} className={`object-contain object-center h-full`} alt="icon"/>
+                                    <h1 className={`text-2xl font-bold`}>Auth App</h1>
+                                </div>
+                            </NavLink>
                         </NavigationMenuItem>
                         {isLoggedIn&&<NavigationMenuItem>
                             <NavLink className={({isActive})=>
@@ -65,10 +67,12 @@ const Header = () => {
                         </Activity>
                         {isLoggedIn &&
                             <div ref={ref} className={`relative  `}>
-                                <Avatar>
-                                    <AvatarImage src={user?.image}/>
-                                    <AvatarFallback>{user?.name[0]}</AvatarFallback>
-                                </Avatar>
+                                <NavLink className={'cursor-pointer select-none'} to={'/dashboard'}>
+                                    <Avatar>
+                                        <AvatarImage src={user?.image}/>
+                                        <AvatarFallback>{user?.name[0]}</AvatarFallback>
+                                    </Avatar>
+                                </NavLink>
 
 
                                 {hovered && <div className={`absolute min-w-32 right-0

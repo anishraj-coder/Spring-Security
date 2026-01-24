@@ -1,6 +1,6 @@
 # Securify: Full-Stack Secure Authentication System
 
-![Securify Banner](https://via.placeholder.com/1400x600/0d1117/ffffff?text=Securify+-+Secure+Full-Stack+Auth)  
+![Securify Banner](image.png)  
 *Placeholder for banner – replace with login/dashboard collage or architecture diagram.*
 
 **Securify** is a secure, production-ready full-stack authentication system built as a learning/template project. It features stateless JWT with HttpOnly refresh cookies, multi-provider OAuth2 (Google & GitHub), email verification, password reset, RBAC, and admin tools.
@@ -94,11 +94,11 @@ Test accounts are auto-seeded on backend startup.
 
 ---
 
-## Screenshots (Placeholders)
+## Screenshots 
 
-![Login](https://via.placeholder.com/1200x800?text=Login+Page)  
-![Dashboard](https://via.placeholder.com/1200x800?text=User+Dashboard)  
-![Admin Panel](https://via.placeholder.com/1200x800?text=Admin+Panel)
+![Login](image3.png)  
+![Dashboard](image1.png)  
+![Admin Panel](image2.png)
 
 ---
 

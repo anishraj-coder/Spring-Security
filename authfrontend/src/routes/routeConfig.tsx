@@ -8,6 +8,8 @@ import UserGuard from "@/components/auth/UserGuard.tsx";
 import UserDashboard from "@/components/user/UserDashboard.tsx";
 import AdminGuard from "@/components/auth/AdminGuard.tsx";
 import AdminDashboard from "@/components/admin/AdminDashboard.tsx";
+import ForgetPasswordForm from "@/components/forgetPassword/ForgetPasswordForm.tsx";
+import ResetPassword from "@/components/forgetPassword/ResetPassword.tsx";
 
 export const routeConfig = createBrowserRouter([{
     path: '/',
@@ -17,8 +19,8 @@ export const routeConfig = createBrowserRouter([{
         { path: "/login", element: <Login /> },
         { path: "/signup", element: <SignUp /> },
         { path: '/oauth2/redirect', element: <OAuth2RedirectHandler /> },
-
-        // --- PROTECTED ROUTES ---
+        { path: '/forget-password',element:<ForgetPasswordForm/>},
+        { path: '/reset-password',element:<ResetPassword/>},
         {
             path: "/dashboard",
             element: (
