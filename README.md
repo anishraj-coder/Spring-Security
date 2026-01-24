@@ -84,7 +84,7 @@ Detailed documentation is inside each folder (`backend/README.md` and `frontend/
     cd frontend
     pnpm install
     pnpm dev
-    # App: http://localhost:5173
+    # App: http://localhost:3000
 
 ### Concurrent (optional)
     npm i -g concurrently
