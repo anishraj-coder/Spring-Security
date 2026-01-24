@@ -1,6 +1,6 @@
 import type {User} from "@/utils/constants.ts";
 import {create} from 'zustand';
-import {devtools} from "zustand/middleware";
+import {createJSONStorage, devtools, persist} from "zustand/middleware";
 export interface AuthState{
     accessToken:string|null;
     user: User|null;
@@ -10,11 +10,16 @@ export interface AuthState{
 }
 
 export const useAuthStore=create<AuthState>()(
-    devtools(set=>({
+    devtools(persist(set=>({
         accessToken: null,
         user: null,
         setAccessToken: (token:string|null)=>set({accessToken: token}),
         setUser: (givenUser:User|null)=>set({user:givenUser}),
         logout: ()=>set({user:null,accessToken:null})
-    }))
+    }),
+        {
+            name:'auth-storage',
+            storage: createJSONStorage(()=>sessionStorage),
+            partialize:(state)=>({user:state.user}),
+        }))
 );

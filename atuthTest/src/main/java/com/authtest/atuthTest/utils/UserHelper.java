@@ -16,11 +16,13 @@ public class UserHelper {
 
     public static UserResponseDto convertUserDtoToResponse(UserDto userDto){
         return UserResponseDto.builder()
+                .id(userDto.getId().toString())
                 .name(userDto.getName())
                 .email(userDto.getEmail())
                 .image(userDto.getImage())
                 .roles(userDto.getRoles().stream().map(RoleDto::getName).collect(Collectors.toSet()))
                 .gender(userDto.getGender())
+                .enabled(userDto.getEnabled())
                 .build();
     }
 }

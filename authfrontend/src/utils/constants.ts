@@ -16,10 +16,12 @@ export interface RegisterRequest {
 }
 
 export interface User {
+    id:string
     email: string
     gender: string
     image: string
     name: string
+    enabled: boolean
     roles: string[]
 }
 
@@ -42,4 +44,33 @@ export interface LoginResponse {
 export interface LoginRequest{
     email: string;
     password: string;
+}
+
+export interface Sort {
+    empty: boolean
+    sorted: boolean
+    unsorted: boolean
+}
+
+export interface Pageable {
+    offset: number
+    pageNumber: number
+    pageSize: number
+    paged: boolean
+    unpaged: boolean
+    sort: Sort
+}
+
+export interface PaginatedResponse<T> {
+    content: T[]
+    empty: boolean
+    first: boolean
+    last: boolean
+    number: number
+    numberOfElements: number
+    pageable: Pageable
+    size: number
+    sort: Sort
+    totalElements: number
+    totalPages: number
 }

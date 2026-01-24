@@ -18,7 +18,7 @@ import {NavLink} from "react-router";
 import {z} from 'zod';
 import {useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useLogin} from "@/api/useLogin.ts";
+import {useLogin} from "@/hooks/useLogin.ts";
 import {toast} from "sonner";
 import {Spinner} from '@/components/ui/spinner';
 import type {ApiError} from "@/utils/constants.ts";

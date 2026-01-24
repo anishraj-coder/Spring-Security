@@ -18,7 +18,7 @@ import {NavLink} from "react-router";
 import * as z from 'zod';
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useSignup} from "@/api/useSignup.ts";
+import {useSignup} from "@/hooks/useSignup.ts";
 import type {ApiError, RegisterRequest} from "@/utils/constants.ts";
 import {toast} from "sonner";
 import {Spinner} from "@/components/ui/spinner.tsx";
