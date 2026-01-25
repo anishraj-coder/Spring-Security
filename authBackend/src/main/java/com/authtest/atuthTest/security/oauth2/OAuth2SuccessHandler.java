@@ -99,6 +99,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .roles(Set.of(roles))
+                .image(userInfo.getImageUrl())
                 .enabled(true)
                 .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .provider(userInfo.getProvider())

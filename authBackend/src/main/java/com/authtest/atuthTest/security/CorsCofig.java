@@ -18,13 +18,13 @@ import java.util.List;
 @Configuration
 public class CorsCofig {
 
-    private List<String> allowedUrls;
+    private String allowedUrls;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration=new CorsConfiguration();
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedOrigins(allowedUrls);
+        configuration.setAllowedOrigins(Arrays.asList(allowedUrls.split(",")));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setMaxAge(3600L);
         configuration.setAllowCredentials(true);
