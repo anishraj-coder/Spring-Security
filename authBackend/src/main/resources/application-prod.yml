@@ -69,7 +69,7 @@ security:
     refresh-token-cookie-name: ${JWT_REFRESH_TOKEN_COOKIE_NAME:refreshCookie}
     cookie-secure: ${JWT_COOKIE_SECURE:true}
     cookie-http-only: ${JWT_COOKIE_HTTP_ONLY:true}
-    cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
-    cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
+    cookie-same-site: ${JWT_COOKIE_SAME_SITE:None}
+    cookie-domain:
   cors:
     allowed-urls: ${ALLOWED_URLS}
