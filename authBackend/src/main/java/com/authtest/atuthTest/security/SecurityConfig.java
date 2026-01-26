@@ -52,6 +52,7 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/user/**").authenticated()
+                                .requestMatchers("/health").permitAll()
                                 .anyRequest().authenticated()
                 ).exceptionHandling(ex->
                         ex.authenticationEntryPoint((request,

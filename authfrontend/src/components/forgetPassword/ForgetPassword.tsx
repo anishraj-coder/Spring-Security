@@ -17,7 +17,7 @@ const schema = z.object({
     email: z.email("Please enter a valid email"),
 });
 
-const ForgetPasswordForm = () => {
+const ForgetPassword = () => {
     const { mutate, isPending } = useForgetPassword();
 
     const {
@@ -102,4 +102,4 @@ const ForgetPasswordForm = () => {
     );
 };
 
-export default ForgetPasswordForm;
+export default ForgetPassword;

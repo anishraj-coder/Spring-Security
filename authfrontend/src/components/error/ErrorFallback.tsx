@@ -1,13 +1,9 @@
+// src/components/error/ErrorFallback.tsx
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCw, Home, ChevronRight } from "lucide-react";
+import type { FallbackProps } from "react-error-boundary"; // Import the correct type
 
-interface ErrorFallbackProps {
-    error: Error;
-    resetErrorBoundary: () => void;
-}
-
-
-export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps) => {
+export const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
     return (
         <div className="relative flex h-screen w-full flex-col items-center justify-center bg-background p-6 text-center text-foreground dark overflow-hidden">
             {/* Background Decorative Element */}
@@ -42,7 +38,8 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
                     <div className="p-4 text-left">
                         <code className="block font-mono text-sm text-destructive/90 break-all leading-relaxed">
                             <span className="text-muted-foreground mr-2 select-none">$</span>
-                            {error.message || "Unknown runtime error occurred."}
+                            {/* We cast to string here safely */}
+                            {String( error || "Unknown runtime error occurred.")}
                         </code>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ const ResetPassword=()=>{
                             <Input
                                 id="password"
                                 type="password"
-                                placeholder="name@example.com"
+                                placeholder="New password"
                                 className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
                                 {...register("password")}
                             />
@@ -69,7 +69,7 @@ const ResetPassword=()=>{
                             <Input
                                 id="confirmPassword"
                                 type="password"
-                                placeholder="name@example.com"
+                                placeholder="Confirm new password"
                                 className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
                                 {...register("confirmPassword")}
                             />

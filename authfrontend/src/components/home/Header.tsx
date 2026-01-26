@@ -12,6 +12,8 @@ import {useAuthStore} from "@/store/useAuthStore.ts";
 import {useHover} from "@uidotdev/usehooks";
 import {useLogout} from "@/hooks/useLogout.ts";
 import {Spinner} from "@/components/ui/spinner.tsx";
+import { useSidebar} from "@/components/ui/sidebar.tsx";
+import {Menu, X} from "lucide-react";
 
 const Header = () => {
     const user = useAuthStore(state => state.user);
@@ -19,12 +21,26 @@ const Header = () => {
     const [ref, hovered] = useHover();
     const {mutate:logout,isPending}=useLogout();
     const isAdmin=user?.roles.some(role=>role.toUpperCase().includes('ADMIN'));
+    const {isMobile,openMobile,toggleSidebar}=useSidebar();
 
     return (
         <header className="w-full h-16 border-b sticky top-0 backdrop-blur-lg">
             <div className={`h-full flex justify-between px-10`}>
                 <NavigationMenu>
                     <NavigationMenuList className={`gap-5`}>
+                        {isMobile && (
+                            <NavigationMenuItem>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={toggleSidebar}
+                                    className="hover:bg-accent transition-all duration-300"
+                                >
+                                    {openMobile ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                                    <span className="sr-only">Toggle Menu</span>
+                                </Button>
+                            </NavigationMenuItem>
+                        )}
                         <NavigationMenuItem>
                             <NavLink to={'/'}>
                                 <div className={`flex items-center h-full gap-5 cursor-pointer select-none`}>
@@ -50,7 +66,7 @@ const Header = () => {
                 </NavigationMenu>
                 <NavigationMenu>
                     <NavigationMenuList className={`gap-10`}>
-                        <Activity mode={!isLoggedIn ? 'visible' : 'hidden'}>
+                        <Activity mode={!isLoggedIn &&!isMobile ? 'visible' : 'hidden'}>
                             <NavigationMenuItem>
                                 <NavLink to={`/login`}
                                          className={({isActive}) =>
@@ -65,7 +81,7 @@ const Header = () => {
                                 </NavLink>
                             </NavigationMenuItem>
                         </Activity>
-                        {isLoggedIn &&
+                        {isLoggedIn &&!isMobile &&
                             <div ref={ref} className={`relative  `}>
                                 <NavLink className={'cursor-pointer select-none'} to={'/dashboard'}>
                                     <Avatar>
