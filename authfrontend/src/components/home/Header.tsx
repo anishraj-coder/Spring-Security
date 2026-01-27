@@ -6,7 +6,7 @@ import {
 import {Button, buttonVariants} from "@/components/ui/button"
 import {NavLink} from "react-router"
 import {cn} from "@/lib/utils.ts";
-import React, {Activity, useRef} from "react";
+import React, {Activity} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {useAuthStore} from "@/store/useAuthStore.ts";
 import {useLogout} from "@/hooks/useLogout.ts";

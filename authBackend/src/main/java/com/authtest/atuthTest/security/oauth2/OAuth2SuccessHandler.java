@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +41,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshTokenRepository refreshTokenRepository;
     private final CookieService cookieService;
     private final PasswordEncoder passwordEncoder;
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @Override
     @Transactional
@@ -115,7 +118,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private String determineRedirectUrl(String accessToken){
-        return "http://localhost:3000/oauth2/redirect?token=" + accessToken;
+        return frontendUrl+"/oauth2/redirect?token=" + accessToken;
     }
 
 }
