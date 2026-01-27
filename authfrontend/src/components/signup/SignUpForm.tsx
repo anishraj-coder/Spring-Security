@@ -19,7 +19,7 @@ import * as z from 'zod';
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useSignup} from "@/hooks/useSignup.ts";
-import type {ApiError, RegisterRequest} from "@/utils/constants.ts";
+import {type ApiError, baseUrl, type RegisterRequest} from "@/utils/constants.ts";
 import {toast} from "sonner";
 import {Spinner} from "@/components/ui/spinner.tsx";
 
@@ -135,12 +135,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                 </Button>
                                 <span className="my-0.5 mx-auto block h-px w-full bg-border opacity-50" />
                                 <Button variant="outline" onClick={()=>
-                                    window.location.href="http://localhost:8082/api/oauth2/authorization/google"}
+                                    window.location.href=`${baseUrl}/oauth2/authorization/google`}
                                         type="button">
                                     Login with Google
                                 </Button>
                                 <Button variant="outline" onClick={()=>window.location
-                                    .href="http://localhost:8082/api/oauth2/authorization/github"} type="button">
+                                    .href=`${baseUrl}/oauth2/authorization/github`} type="button">
                                     Login with Github
                                 </Button>
                                 <FieldDescription className="px-6 text-center">
