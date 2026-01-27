@@ -25,8 +25,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,6 +59,10 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final VerificationTokenRepository verificationTokenRepository;
 
+    @Value("${app.backend.url}")
+    private String backendUrl;
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
     @Transactional
     @Override
     public RegisterResponse registerUser(RegisterRequest request) {
@@ -79,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
             @Override
             public void afterCommit() {
                 emailService.sendMail(createdUser.getEmail(),"Please verify your email",
-                        "http://localhost:8082/api/auth/verify?token="+token);
+                        backendUrl+"/auth/verify?token="+token);
             }
         });
         return modelMapper.map(createdUser,RegisterResponse.class);
@@ -90,7 +96,10 @@ public class AuthServiceImpl implements AuthService {
         try{
             return authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(email,password));
-        }catch (Exception e){
+        }catch (DisabledException ex){
+            log.error("The User is not verified: {}",email);
+            throw new DisabledException("The User is not verified: "+email);
+        }        catch (Exception e){
             log.error("Invalid credentials for the request: {}",email);
             throw new BadCredentialsException("Invalid email or password: "+email);
         }
@@ -246,7 +255,7 @@ public class AuthServiceImpl implements AuthService {
             @Override
             public void afterCommit() {
                 emailService.sendMail(user.getEmail(),"Reset Email",
-                        "http://localhost:3000/reset-password?token="+token);
+                        frontendUrl+"/reset-password?token="+token);
             }
         });
         return "The email has been sent";

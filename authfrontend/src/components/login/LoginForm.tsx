@@ -26,8 +26,8 @@ import type {ApiError} from "@/utils/constants.ts";
 const loginSchema=z.object({
     email: z.email("The email is invalid"),
     password: z.string()
-        .min(5,{message: `The email must be at least 5 characters long`})
-        .max(15,{message:"The email must be at most 15 character long"}),
+        .min(5,{message: `The password must be at least 5 characters long`})
+        .max(15,{message:"The password must be at most 15 character long"}),
 });
 
 export function LoginForm({

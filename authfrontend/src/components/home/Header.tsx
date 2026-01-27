@@ -6,19 +6,19 @@ import {
 import {Button, buttonVariants} from "@/components/ui/button"
 import {NavLink} from "react-router"
 import {cn} from "@/lib/utils.ts";
-import {Activity} from "react";
+import React, {Activity, useRef} from "react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {useAuthStore} from "@/store/useAuthStore.ts";
-import {useHover} from "@uidotdev/usehooks";
 import {useLogout} from "@/hooks/useLogout.ts";
 import {Spinner} from "@/components/ui/spinner.tsx";
 import { useSidebar} from "@/components/ui/sidebar.tsx";
 import {Menu, X} from "lucide-react";
+import {useHoverIntent} from "react-use-hoverintent";
 
 const Header = () => {
     const user = useAuthStore(state => state.user);
     const isLoggedIn = !!user;
-    const [ref, hovered] = useHover();
+    const [isHovering, intentRef] = useHoverIntent({timeout: 200});
     const {mutate:logout,isPending}=useLogout();
     const isAdmin=user?.roles.some(role=>role.toUpperCase().includes('ADMIN'));
     const {isMobile,openMobile,toggleSidebar}=useSidebar();
@@ -82,7 +82,7 @@ const Header = () => {
                             </NavigationMenuItem>
                         </Activity>
                         {isLoggedIn &&!isMobile &&
-                            <div ref={ref} className={`relative  `}>
+                            <div ref={intentRef as React.RefObject<HTMLDivElement>} className={`relative  `}>
                                 <NavLink className={'cursor-pointer select-none'} to={'/dashboard'}>
                                     <Avatar>
                                         <AvatarImage src={user?.image}/>
@@ -91,7 +91,7 @@ const Header = () => {
                                 </NavLink>
 
 
-                                {hovered && <div className={`absolute min-w-32 right-0
+                                {isHovering && <div className={`absolute min-w-32 right-0
                                 rounded-lg flex flex-col gap-1 -bottom-1 translate-y-full
                                  bg-background p-2 ring-1 ring-border`}>
                                     <h1 className={`${cn(buttonVariants({variant: 'ghost'}))} `}>

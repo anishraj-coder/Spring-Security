@@ -73,3 +73,8 @@ security:
     cookie-domain:
   cors:
     allowed-urls: ${ALLOWED_URLS}
+app:
+  frontend:
+    url: ${FRONTEND_URL}
+  backend:
+    url: ${BACKEND_URL}

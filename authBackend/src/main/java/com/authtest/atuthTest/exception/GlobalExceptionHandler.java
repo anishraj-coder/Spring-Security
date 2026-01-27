@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -114,7 +115,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "JWT signature validation failed. The token has been tampered with.", List.of(ex.getMessage()));
     }
 
-    // This catches all other JWT related exceptions (unsupported, illegal argument, etc.)
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiError> handleJwtException(JwtException ex) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Authentication failed: " + ex.getMessage(), null);
@@ -123,4 +123,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleBadCredentialException(BadCredentialsException e){
         return buildErrorResponse(HttpStatus.UNAUTHORIZED,e.getMessage(),List.of(e.getMessage()));
     }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiError> handleDisabledUserException(DisabledException ex) {
+        return buildErrorResponse(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                List.of(ex.getMessage())
+        );
+    }
+
 }

@@ -73,3 +73,8 @@ security:
     cookie-domain:
   cors:
     allowed-urls: http://localhost:3000
+app:
+  frontend:
+    url: http://localhost:3000
+  backend:
+    url: http://localhost:8082/api
