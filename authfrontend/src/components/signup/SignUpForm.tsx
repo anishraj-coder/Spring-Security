@@ -22,6 +22,7 @@ import {useSignup} from "@/hooks/useSignup.ts";
 import {type ApiError, baseUrl, type RegisterRequest} from "@/utils/constants.ts";
 import {toast} from "sonner";
 import {Spinner} from "@/components/ui/spinner.tsx";
+import React from "react";
 
 const signUpSchema=z.object({
     email: z.email({message: "Please enter a valid email"}),
@@ -130,22 +131,22 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                         </Field>
                         <FieldGroup>
                             <Field>
-                                <Button disabled={isPending}  type="submit">
+                                <Button disabled={isPending} className={`${isPending?'cursor-progress':'cursor-pointer'}`}  type="submit">
                                     {isPending?<Spinner/>:"Create Account"}
                                 </Button>
                                 <span className="my-0.5 mx-auto block h-px w-full bg-border opacity-50" />
-                                <Button variant="outline" onClick={()=>
+                                <Button variant="outline" className={`cursor-pointer`} onClick={()=>
                                     window.location.href=`${baseUrl}/oauth2/authorization/google`}
                                         type="button">
                                     Login with Google
                                 </Button>
-                                <Button variant="outline" onClick={()=>window.location
+                                <Button variant="outline" className={`cursor-pointer`} onClick={()=>window.location
                                     .href=`${baseUrl}/oauth2/authorization/github`} type="button">
                                     Login with Github
                                 </Button>
                                 <FieldDescription className="px-6 text-center">
                                     Already have an account?
-                                    <NavLink className={`ml-2`} to={`/login`}>Login</NavLink>
+                                    <NavLink className={`ml-2 cursor-pointer`} to={`/login`}>Login</NavLink>
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>

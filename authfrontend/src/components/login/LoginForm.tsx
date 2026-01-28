@@ -99,16 +99,16 @@ export function LoginForm({
                                 )}
                             </Field>
                             <Field>
-                                <Button disabled={isPending} type="submit">
+                                <Button disabled={isPending} className={`cursor-pointer`} type="submit">
                                     {isPending?<Spinner/>:"Login"}
                                 </Button>
                                 <span className="my-0.5 mx-auto block h-px w-full bg-border opacity-50" />
-                                <Button variant="outline" onClick={()=>
+                                <Button variant="outline" className={`cursor-pointer`} onClick={()=>
                                     window.location.href=`${baseUrl}/oauth2/authorization/google`}
                                         type="button">
                                     Login with Google
                                 </Button>
-                                <Button variant="outline" onClick={()=>window.location
+                                <Button variant="outline" className={`cursor-pointer`} onClick={()=>window.location
                                     .href=`${baseUrl}/oauth2/authorization/github`} type="button">
                                     Login with Github
                                 </Button>
