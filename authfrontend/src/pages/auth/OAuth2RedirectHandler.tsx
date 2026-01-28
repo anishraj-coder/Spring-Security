@@ -14,8 +14,9 @@ const OAuth2RedirectHandler=()=>{
     const{setUser,setAccessToken}=useAuthStore(useShallow(state=>({setUser:state.setUser,setAccessToken:state.setAccessToken})));
     useEffect(()=>{
         const token=searchParams.get("token");
-        setAccessToken(token);
+        const error = searchParams.get('error');
         if(token){
+            setAccessToken(token);
             api.get<User>("/user/info")
                 .then(res=>{
                     setUser(res.data);
@@ -31,7 +32,8 @@ const OAuth2RedirectHandler=()=>{
                 navigate("/login");
             });
         }else{
-            navigate("/login");
+            toast.error("Authentication failed!!!",{description: error})
+            navigate('/login', { state: { error: error || 'Authentication failed' } });
         }
     },[navigate, searchParams, setAccessToken, setUser]);
 
